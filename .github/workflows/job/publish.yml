@@ -1,0 +1,7 @@
+parameters:
+  code: 'dev'
+
+steps:
+  - script: |
+      pwd
+    displayName: 'Hello script ${{parameters.code}}'

@@ -1,0 +1,8 @@
+parameters:
+  environment: dev
+
+steps:
+  
+  - script: |
+      pwd
+    displayName: 'Hello script ${{parameters.environment}}'
