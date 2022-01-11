@@ -32,4 +32,9 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-         dotnet-version: "3.1.x"         
+         dotnet-version: "3.1.x"        
+       # Run dotnet build and publish
+      - name: dotnet build
+        run: dotnet build './sources/Idc' --configuration Release
+      - name: dotnet publish
+        run: dotnet publish './sources/Idc' -c Release -o './sources/Idc/myapp'
