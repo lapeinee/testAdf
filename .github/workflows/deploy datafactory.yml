@@ -1,0 +1,55 @@
+name: datafactory deployment dev Test
+
+# Controls when the workflow will run
+on: 
+  #  Triggers the workflow on push for the master branch
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Bump Version
+        default: v1.0.0
+        required: true
+  #push:
+   # branches: [ master ]
+  #pull_request:
+    #branches: [ master ]
+
+# Controls when the workflow will run
+env:
+  resourceGroupName: Capweursgibad01
+  factoryName: capweudfyibad11
+  ARMTemplatePath: capweudfyibad11/ARMTemplateForFactory.json 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+      
+    - name: Login via Az Module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.DEVOPS_DEVELOPMENT}}
+        enable-AzPSSession: true
+
+    - name: Desactivate trigger
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          .github/workflows/scripts/StartStopDatafacoryTriggers.ps1 -resourceGroup ${{env.resourceGroupName}} -datafactoryName ${{env.factoryName}} -enable false
+        azPSVersion: "latest"
+          
+    - name: Deploy ARM
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          .github/workflows/scripts/deployARMtemplate.ps1 -resourceGroup "${{env.resourceGroupName}}" -datafactoryName "${{env.factoryName}}" -ARMTemplatePath "${{env.ARMTemplatePath}}"
+        azPSVersion: "latest"
+
+    - name: Activate trigger
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          .github/workflows/scripts/StartStopDatafacoryTriggers.ps1 -resourceGroup ${{env.resourceGroupName}} -datafactoryName ${{env.factoryName}} -enable true
+        azPSVersion: "latest"
